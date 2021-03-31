@@ -1,90 +1,79 @@
 # Data Modeling with Apache Cassandra
 
-This repository is for the first Data Engineering Nanodegree project from Udacity. This project implements an ETL pipeline using Python and Postgres:
+This repository is for the second Data Engineering Nanodegree project from Udacity. This project implements an ETL pipeline using Python and Apache Cassandra Database:
 
-- Understanding the problem to solve
-- Modeling the database and pipeline model
-- Create the database schema
-- ETL development in Python
+- Problem understanding
+- Data description
+- Project structure
+- ETL Pipeline description
+- Instructions to run the pipeline
 
 
 ## Problem understanding
 
-Define fact and dimension tables for a star schema for a particular analytic focus and write an ETL pipeline that transfers data from files in two local directories into these tables in Postgres using Python and SQL. The task is to create a database schema and upload the data into a PostgreSQL database and implement an ETL pipeline for this analysis.
+Develop the databse for startup called Sparkify in Apache Cassandra to improve analytics tasks. Complete an ETL pipeline using Python. To complete the project model your data by creating tables in Apache Cassandra to run queries. The ETL transfers data from a set of CSV files within a directory to create a streamlined CSV file to model and insert data into Apache Cassandra tables.
 
 
 ## Data description
 
-The project uses data from [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/) that is a freely-available collection of audio features and metadata for a million contemporary popular music tracks (300 GB). This data is open for exploration and research and for this project will only use a sample from the songs database and artist information in json format.
-  
-- **Song dataset**:  
-  Json files are under */data/song_data* directory. The file format is:
+The project uses a sample dataset from [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/) with even related to song played in s streaming service. 
 
-```
-{"num_songs": 1, "artist_id": "ARJIE2Y1187B994AB7", "artist_latitude": null, "artist_longitude": null, "artist_location": "", "artist_name": "Line Renaud", "song_id": "SOUPIRU12A6D4FA1E1", "title": "Der Kleine Dompfaff", "duration": 152.92036, "year": 0}
-```
-
-- **Log dataset**: 
-  Json File are under */data/log_data*. The file format is:
-
-```
-{"artist":"Slipknot","auth":"Logged In","firstName":"Aiden","gender":"M","itemInSession":0,"lastName":"Ramirez","length":192.57424,"level":"paid","location":"New York-Newark-Jersey City, NY-NJ-PA","method":"PUT","page":"NextSong","registration":1540283578796.0,"sessionId":19,"song":"Opium Of The People (Album Version)","status":200,"ts":1541639510796,"userAgent":"\"Mozilla\/5.0 (Windows NT 6.1) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/36.0.1985.143 Safari\/537.36\"","userId":"20"}
-```
-## Database Model
-
-The database will be designed for analytics using Fact and Dimensions tables on a Star Schema architecture:
-
-**Fact Table**
-
-  songplays - records in log data associated with song plays i.e. records with page NextSong
-    songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
+- **Events dataset**:  
+    event_data/2018-11-08-events.csv
+    
+    event_data/2018-11-09-events.csv
 
 
-**Dimension Tables**
+### Querys to implement in the database
 
-  users - users in the app: user_id, first_name, last_name, gender, level
-  songs - songs in music database: song_id, title, artist_id, year, duration
-  artists - artists in music database: artist_id, name, location, latitude, longitude
-  time - timestamps of records in songplays broken down into specific units: start_time, hour, day, week, month, year, weekday
-
-
-### Logic model
-
-![Logic model](https://github.com/Fer-Bonilla/Udacity-Data-Engineering-data-modeling-with-postgres/blob/main/images/ERD_Postgres_Database.png)
+ - QUERY 1: Give me the artist, song title and song's length in the music app history that was heard during sessionId = 338, and itemInSession = 4
+ - QUERY 2: Give me only the following: name of artist, song (sorted by itemInSession) and user (first and last name) for userid = 10, sessionid = 182
+ - QUERY 3: Give me every user name (first and last) in my music app history who listened to the song 'All Hands Against His Own'
 
 
 ## Project structure
 
 The project structure is based on the Udacity's project template:
-1. **test.ipynb** displays the first few rows of each table to let you check your database
-2. **create_tables.py** drops and creates your tables. You run this file to reset your tables before each time you run your ETL scripts
-3. **etl.ipynb** reads and processes a single file from song_data and log_data and loads the data into your tables
-5. **etl.py** reads and processes files from song_data and log_data and loads them into the databse tables
-7. **sql_queries.py** contains all the sql queries for create and fill the tables
-8. **README.md** provides discussion on your project
+1. **event_datafile_new.csv** denormalized data created from the csv files provided
+2. **Project_1B_ Project_Template.ipynb** Jupyter Notebook will al the steps from Keyspace creation, tables creation, insert sql scripts, selects querys and drop tables scripts
+3. **README.md** provides projects description
 
 ## ETL Pipeline description
 
-### etl.py
-The ETL process is developed in the etl.py script. Data is load from the JSON files first from the songs dataset and extracting song_id, title, artist_id, year, duration columns and filling the songs table and artist table. (function process_song_file). The second dataset is load from logs files to fill the tables time and users. In both cases, the data is loaded to pandas data frames, and then cleaned and filtered and using psycopg2 the SQL insert scripts (sql_queries) to fill all the tables.
+### Project_1B_ Project_Template.ipynb
+The ETL process is developed all in the 'Project_1B_ Project_Template.ipynb' file. The process init reading all files in the /event_data and then execute a data denormalization transforming the input csv files into a unique csv file with this fields:
 
-### ETL pipeline diagram
+ - 0 : artist
+ - 1 : firstName
+ - 2 : gender
+ - 3 : itemInSession
+ - 4 : lastName
+ - 5 : length
+ - 6 : level
+ - 7 : location
+ - 8 : sessionId
+ - 9 : song
+ - 10 : userId
 
-![ETL pipeline diagram](https://github.com/Fer-Bonilla/Udacity-Data-Engineering-data-modeling-with-postgres/blob/main/images/ETL_Pipeline.png)
+The script provides code to:
+
+  - Create the 'sparkify' Keyspace
+  - Table creation DDL and INSERT and SELECT querys scritps for each query required
+  - Drop tables scripts and close connection commands
+
 
 ## Instructions to run the pipeline
 
 A. Componentes required
-  1. Postgres dabase 
+  1. Apache Cassandra 2.1 or superior
   2. Jupyter notebooks environment available
-  3. Python packages: psycopg2, pandas and python-sql
+  3. Python packages: cassandra, pandas , re, sgon, csv and numpy
 
 B Running the pipeline
 
   1. Clone the respository
-  2. Run create_tables.py (Drop tables and create again)
-  4. Run etl.py (Run the ETL process)
-  5. Run test.ipynb notebook to validate with son example querys
+  2. Run Project_1B_ Project_Template.ipynb
+  3. Validate in every step the script execution
 
 ## Author 
 Fernando Bonilla [linkedin](https://www.linkedin.com/in/fer-bonilla/)
