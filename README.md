@@ -2,9 +2,11 @@
 
 This repository is for the second Data Engineering Nanodegree project from Udacity. This project implements an ETL pipeline using Python and Apache Cassandra Database:
 
-- Understanding the problem to solve
+- Problem understanding
+- Data description
 - Project structure
-- ETL description
+- ETL Pipeline description
+- Instructions to run the pipeline
 
 
 ## Problem understanding
